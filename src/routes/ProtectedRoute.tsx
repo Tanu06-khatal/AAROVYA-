@@ -8,15 +8,24 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, user, role } = useAuth();
 
-  if (!isAuthenticated) {
+  // 1. Unauthenticated users cannot access protected dashboards
+  if (!isAuthenticated || !user) {
+    if (allowedRoles && allowedRoles.includes('admin') && allowedRoles.length === 1) {
+      return <Navigate to="/admin/login" replace />;
+    }
     return <Navigate to="/login" replace />;
   }
 
+  // 2. Incomplete user profile must complete profile setup first
+  if (user.isProfileComplete === false) {
+    return <Navigate to="/profile/setup" replace />;
+  }
+
+  // 3. Role-Based Access Control: Unauthorized roles are denied access
   if (allowedRoles && !allowedRoles.includes(role)) {
-    // Role mismatch - allow seamless experience by auto-switching or showing unauthorized
-    return <Outlet />;
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return <Outlet />;

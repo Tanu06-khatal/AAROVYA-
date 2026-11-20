@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, Menu, Shield, User, LogOut, ChevronDown, Check, Sparkles } from 'lucide-react';
+import { Bell, Menu, Shield, User, LogOut, ChevronDown, Check, Sparkles, Settings } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BrandLogo } from '../common/BrandLogo';
 import { useAuth } from '../../context/AuthContext';
@@ -11,10 +11,9 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
-  const { user, role, switchRole, logout } = useAuth();
+  const { user, role, logout } = useAuth();
   const { notifications, unreadCount, markAsRead } = useNotifications();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
 
@@ -23,15 +22,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
     doctor: { label: 'Doctor Portal', badge: 'bg-sky-50 text-sky-700 border-sky-200' },
     laboratory: { label: 'Laboratory View', badge: 'bg-purple-50 text-purple-700 border-purple-200' },
     admin: { label: 'Admin Console', badge: 'bg-amber-50 text-amber-700 border-amber-200' },
-  };
-
-  const handleRoleChange = (newRole: UserRole) => {
-    switchRole(newRole);
-    setShowRoleMenu(false);
-    if (newRole === 'patient') navigate('/patient/dashboard');
-    else if (newRole === 'doctor') navigate('/doctor/dashboard');
-    else if (newRole === 'laboratory') navigate('/laboratory/dashboard');
-    else if (newRole === 'admin') navigate('/admin/dashboard');
   };
 
   return (
@@ -48,39 +38,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
 
         <BrandLogo size="sm" showSubtitle={false} linkTo={role === 'patient' ? '/patient/dashboard' : `/${role}/dashboard`} />
 
-        {/* Current Active Role Badge */}
-        <div className="relative hidden sm:block">
-          <button
-            onClick={() => setShowRoleMenu(!showRoleMenu)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${roleLabels[role].badge} hover:opacity-90 transition-all`}
-          >
+        {/* Current Active Role Badge (Static - Authenticated role determined by backend) */}
+        <div className="hidden sm:block">
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${roleLabels[role].badge}`}>
             <span>{roleLabels[role].label}</span>
-            <ChevronDown className="w-3 h-3 opacity-70" />
-          </button>
-
-          {/* Quick Role Switcher Dropdown */}
-          {showRoleMenu && (
-            <div
-              className="absolute left-0 mt-2 w-48 bg-white border border-borderLight rounded-2xl shadow-elevated p-1.5 z-50 animate-in fade-in-0 zoom-in-95"
-              onMouseLeave={() => setShowRoleMenu(false)}
-            >
-              <div className="px-3 py-1.5 text-[11px] font-bold text-textSecondary uppercase tracking-wider">
-                Switch Perspective
-              </div>
-              {(['patient', 'doctor', 'laboratory', 'admin'] as UserRole[]).map((r) => (
-                <button
-                  key={r}
-                  onClick={() => handleRoleChange(r)}
-                  className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-xl font-medium transition-colors ${
-                    role === r ? 'bg-primary-50 text-primary font-bold' : 'text-navy hover:bg-slate-50'
-                  }`}
-                >
-                  <span className="capitalize">{r === 'laboratory' ? 'Laboratory Staff' : r}</span>
-                  {role === r && <Check className="w-3.5 h-3.5 text-primary" />}
-                </button>
-              ))}
-            </div>
-          )}
+          </span>
         </div>
       </div>
 
@@ -188,11 +150,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
               </div>
 
               <Link
-                to={role === 'patient' ? '/patient/settings' : `/${role}/dashboard`}
+                to="/profile/edit"
                 onClick={() => setShowProfileMenu(false)}
                 className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-navy hover:bg-slate-50 rounded-xl"
               >
                 <User className="w-4 h-4 text-textSecondary" />
+                <span>My Profile</span>
+              </Link>
+
+              <Link
+                to={role === 'patient' ? '/patient/settings' : `/${role}/dashboard`}
+                onClick={() => setShowProfileMenu(false)}
+                className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-navy hover:bg-slate-50 rounded-xl"
+              >
+                <Settings className="w-4 h-4 text-textSecondary" />
                 <span>Account & Settings</span>
               </Link>
 

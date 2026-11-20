@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Navigate } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { MobileBottomNav } from './MobileBottomNav';
 import { MobileDrawer } from './MobileDrawer';
+import { useAuth } from '../../context/AuthContext';
 
 export const DashboardLayout: React.FC = () => {
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const { user } = useAuth();
+
+  // If user profile is not complete, redirect to profile setup
+  if (user && user.isProfileComplete === false) {
+    return <Navigate to="/profile/setup" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col antialiased">

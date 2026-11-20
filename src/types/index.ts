@@ -1,4 +1,5 @@
-export type UserRole = 'patient' | 'doctor' | 'laboratory' | 'admin';
+export type RegularUserRole = 'patient' | 'doctor' | 'laboratory';
+export type UserRole = RegularUserRole | 'admin';
 
 export interface User {
   id: string;
@@ -12,6 +13,19 @@ export interface User {
   licenseNumber?: string; // For doctors / labs
   facilityName?: string; // For lab / doctor
   emergencyContact?: string;
+  emergencyContactName?: string;
+  emergencyRelation?: string;
+  isProfileComplete?: boolean;
+  dateOfBirth?: string;
+  gender?: string;
+  allergies?: string;
+  conditions?: string;
+  address?: string;
+  city?: string;
+  qualifications?: string;
+  experience?: string;
+  department?: string;
+  clearanceLevel?: string;
 }
 
 export type RecordCategory = 
