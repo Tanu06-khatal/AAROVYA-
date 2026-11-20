@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.aarovya.dao.RoleDao;
 import com.aarovya.dao.UserDao;
@@ -29,9 +31,13 @@ public class RoleDataInitializer {
             RoleDao roleDao,
             UserDao userDao,
             PasswordEncoder passwordEncoder,
-            Environment environment) {
+            Environment environment,
+            PlatformTransactionManager transactionManager) {
 
-        return args -> {
+        TransactionTemplate transactionTemplate =
+                new TransactionTemplate(transactionManager);
+
+        return args -> transactionTemplate.executeWithoutResult(status -> {
 
             // Create default roles
             List<String> defaultRoles = List.of(
@@ -67,7 +73,6 @@ public class RoleDataInitializer {
             String adminPassword =
                     environment.getProperty("AAROVYA_ADMIN_PASSWORD");
 
-            // Check whether all ADMIN details are supplied
             boolean allMissing =
                     isBlank(adminName)
                     && isBlank(adminEmail)
@@ -138,10 +143,10 @@ public class RoleDataInitializer {
             userDao.save(admin);
 
             logger.info("Initial ADMIN account created successfully.");
-        };
+        });
     }
 
-    private boolean isBlank(String value) {
+    private static boolean isBlank(String value) {
         return value == null || value.isBlank();
     }
 }

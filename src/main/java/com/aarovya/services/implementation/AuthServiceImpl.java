@@ -51,9 +51,12 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponse registerUser(RegisterRequest registerRequest) {
 
-        logger.info("Registering user: {}", registerRequest.getEmail());
+        String normalizedEmail =
+                registerRequest.getEmail().trim().toLowerCase(Locale.ROOT);
 
-        if (userDao.existsByEmail(registerRequest.getEmail())) {
+        logger.info("Registering user: {}", normalizedEmail);
+
+        if (userDao.existsByEmail(normalizedEmail)) {
             throw new DuplicateResourceException(
                     "Email is already registered");
         }
@@ -81,8 +84,21 @@ public class AuthServiceImpl implements AuthService {
         User newUser = new User();
 
         newUser.setFullName(registerRequest.getFullName());
-        newUser.setEmail(registerRequest.getEmail());
-        newUser.setMobileNumber(registerRequest.getMobileNumber());
+        newUser.setEmail(normalizedEmail);
+
+        String mobileNumber = registerRequest.getMobileNumber();
+        if (mobileNumber != null) {
+            mobileNumber = mobileNumber.trim();
+        }
+
+        if (mobileNumber != null && !mobileNumber.isBlank()
+                && userDao.existsByMobileNumber(mobileNumber)) {
+            throw new DuplicateResourceException(
+                    "Mobile number is already registered");
+        }
+
+        newUser.setMobileNumber(mobileNumber);
+
         newUser.setPassword(
                 passwordEncoder.encode(registerRequest.getPassword()));
 
@@ -106,10 +122,13 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public AuthResponse loginUser(LoginRequest loginRequest) {
 
-        logger.info("Login attempt: {}", loginRequest.getEmail());
+        String normalizedEmail =
+                loginRequest.getEmail().trim().toLowerCase(Locale.ROOT);
+
+        logger.info("Login attempt: {}", normalizedEmail);
 
         User existingUser = userDao
-                .findByEmail(loginRequest.getEmail())
+                .findByEmail(normalizedEmail)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Invalid email or password"));
 

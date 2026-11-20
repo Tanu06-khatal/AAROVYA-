@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aarovya.dao.UserDao;
 import com.aarovya.entities.User;
 import com.aarovya.exception.ResourceNotFoundException;
+import com.aarovya.exception.DuplicateResourceException;
 import com.aarovya.services.UserService;
 
 @Service
@@ -45,14 +46,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User updateUser(Long userId, User updatedUser) {
 
         logger.info("Updating user with ID: {}", userId);
 
         User existingUser = getUserById(userId);
 
+        String mobileNumber = updatedUser.getMobileNumber();
+
+        if (mobileNumber != null) {
+            mobileNumber = mobileNumber.trim();
+        }
+
+        if (mobileNumber != null && mobileNumber.isBlank()) {
+            mobileNumber = null;
+        }
+
+        if (mobileNumber != null
+                && userDao.existsByMobileNumberAndUserIdNot(
+                        mobileNumber, userId)) {
+            throw new DuplicateResourceException(
+                    "Mobile number is already registered");
+        }
+
         existingUser.setFullName(updatedUser.getFullName());
-        existingUser.setMobileNumber(updatedUser.getMobileNumber());
+        existingUser.setMobileNumber(mobileNumber);
 
         User savedUser = userDao.save(existingUser);
 

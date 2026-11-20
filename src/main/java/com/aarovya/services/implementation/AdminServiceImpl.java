@@ -4,8 +4,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.aarovya.dao.LaboratoryProfileDao;
+import com.aarovya.dao.DoctorProfileDao;
 import com.aarovya.dto.LaboratoryProfileResponse;
+import com.aarovya.dto.DoctorProfileResponse;
 import com.aarovya.entities.LaboratoryProfile;
+import com.aarovya.entities.DoctorProfile;
 import com.aarovya.exception.ResourceNotFoundException;
 import com.aarovya.services.AdminService;
 
@@ -14,9 +17,14 @@ import com.aarovya.services.AdminService;
 public class AdminServiceImpl implements AdminService {
 
     private final LaboratoryProfileDao laboratoryProfileDao;
+    private final DoctorProfileDao doctorProfileDao;
 
-    public AdminServiceImpl(LaboratoryProfileDao laboratoryProfileDao) {
+    public AdminServiceImpl(
+            LaboratoryProfileDao laboratoryProfileDao,
+            DoctorProfileDao doctorProfileDao) {
+
         this.laboratoryProfileDao = laboratoryProfileDao;
+        this.doctorProfileDao = doctorProfileDao;
     }
 
     @Override
@@ -37,10 +45,31 @@ public class AdminServiceImpl implements AdminService {
         LaboratoryProfile updatedProfile =
                 laboratoryProfileDao.save(profile);
 
-        return mapToResponse(updatedProfile);
+        return mapToLaboratoryResponse(updatedProfile);
     }
 
-    private LaboratoryProfileResponse mapToResponse(
+    @Override
+    public DoctorProfileResponse verifyDoctor(Long profileId) {
+
+        DoctorProfile profile = doctorProfileDao.findById(profileId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Doctor profile not found with ID: " + profileId));
+
+        if (profile.isVerified()) {
+            throw new IllegalArgumentException(
+                    "Doctor profile is already verified");
+        }
+
+        profile.setVerified(true);
+
+        DoctorProfile updatedProfile =
+                doctorProfileDao.save(profile);
+
+        return new DoctorProfileResponse(updatedProfile);
+    }
+
+    private LaboratoryProfileResponse mapToLaboratoryResponse(
             LaboratoryProfile profile) {
 
         LaboratoryProfileResponse response =

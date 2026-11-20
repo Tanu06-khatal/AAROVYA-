@@ -10,6 +10,7 @@ public class DoctorProfileResponse {
     private String qualification;
     private String medicalRegistrationNumber;
     private Integer yearsOfExperience;
+    private boolean verified;
     private String clinicAddress;
 
     public DoctorProfileResponse(DoctorProfile profile) {
@@ -20,6 +21,7 @@ public class DoctorProfileResponse {
         this.medicalRegistrationNumber =
                 profile.getMedicalRegistrationNumber();
         this.yearsOfExperience = profile.getYearsOfExperience();
+        this.verified = profile.isVerified();
         this.clinicAddress = profile.getClinicAddress();
     }
 
@@ -45,6 +47,10 @@ public class DoctorProfileResponse {
 
     public Integer getYearsOfExperience() {
         return yearsOfExperience;
+    }
+
+    public boolean isVerified() {
+        return verified;
     }
 
     public String getClinicAddress() {

@@ -24,6 +24,8 @@ public class DoctorProfile {
 
     private Integer yearsOfExperience;
 
+    private boolean verified = false;
+
     @Column(length = 500)
     private String clinicAddress;
 
