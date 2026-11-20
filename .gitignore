@@ -29,10 +29,3 @@ dist-ssr
 .env.*
 !.env.example
 
-
-# Node.js dependencies
-node_modules/
-
-# Production build
-dist/
-

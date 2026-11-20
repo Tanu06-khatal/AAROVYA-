@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Button } from '../../components/common/Button';
 import { useAuth } from '../../context/AuthContext';
@@ -18,10 +19,12 @@ export const SettingsSecurity: React.FC = () => {
   const [name, setName] = useState(user?.name || 'Patient1');
   const [phone, setPhone] = useState(user?.phone || '+91 98230 45678');
   const [email, setEmail] = useState(user?.email || 'patient1@aarovya.health');
+  const [bloodGroup, setBloodGroup] = useState(user?.bloodGroup || 'B+');
+  const [emergencyContact, setEmergencyContact] = useState(user?.emergencyContact || '+91 98221 12345');
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    updateUserProfile({ name, phone, email });
+    updateUserProfile({ name, phone, email, bloodGroup, emergencyContact });
     showToast('Profile information successfully updated', 'success');
   };
 
@@ -217,10 +220,41 @@ export const SettingsSecurity: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-navy block mb-1">Blood Group</label>
+                  <select
+                    value={bloodGroup}
+                    onChange={(e) => setBloodGroup(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-borderLight rounded-xl text-navy"
+                  >
+                    {['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map((bg) => (
+                      <option key={bg} value={bg}>{bg}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="font-bold text-navy block mb-1">Emergency SOS Contact</label>
+                  <input
+                    type="tel"
+                    value={emergencyContact}
+                    onChange={(e) => setEmergencyContact(e.target.value)}
+                    placeholder="+91 98221 12345"
+                    className="w-full px-3 py-2 bg-slate-50 border border-borderLight rounded-xl text-navy"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
                 <Button type="submit" variant="primary" size="md">
                   Save Changes
                 </Button>
+                <Link
+                  to="/profile/edit"
+                  className="text-primary text-xs font-bold hover:underline"
+                >
+                  Edit Advanced Role Profile →
+                </Link>
               </div>
             </form>
           )}

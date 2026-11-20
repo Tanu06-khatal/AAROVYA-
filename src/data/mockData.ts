@@ -31,6 +31,13 @@ export const mockCurrentUser: User = {
   avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
   bloodGroup: 'B+',
   emergencyContact: '+91 98221 12345',
+  isProfileComplete: true,
+  gender: 'Female',
+  dateOfBirth: '1998-05-14',
+  address: 'Flat 402, Royal Palms, Shivaji Nagar',
+  city: 'Pune, Maharashtra',
+  allergies: 'Penicillin, Dust Pollen',
+  conditions: 'Mild Asthma',
 };
 
 export const mockDoctors: User[] = [
@@ -44,6 +51,10 @@ export const mockDoctors: User[] = [
     facilityName: 'ABC Hospital / City Hospital',
     licenseNumber: 'MCI-CARD-49210',
     avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=200',
+    isProfileComplete: true,
+    qualifications: 'MBBS, MD (Cardiology)',
+    experience: '12 Years',
+    department: 'Cardiology',
   },
   {
     id: 'doc-002',
@@ -55,6 +66,10 @@ export const mockDoctors: User[] = [
     facilityName: 'Care Clinic / City Hospital',
     licenseNumber: 'MCI-GEN-38102',
     avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=200',
+    isProfileComplete: true,
+    qualifications: 'MBBS, MD (Internal Medicine)',
+    experience: '8 Years',
+    department: 'General Medicine',
   },
 ];
 
